@@ -52,68 +52,24 @@
               <a href="javascript:;" class="has-arrow">
                 <div class="parent-icon"><i class="bi bi-basket2-fill"></i>
                 </div>
-                <div class="menu-title">eCommerce</div>
+                <div class="menu-title">الشعب</div>
               </a>
               <ul>
-                <li> <a href="ecommerce-products-list.html"><i class="bi bi-circle"></i>Products List</a>
+                <li> <a href="{{ route('dash.section.index') }}"><i class="bi bi-circle"></i>جميع الشعب</a>
                 </li>
-                <li> <a href="ecommerce-products-grid.html"><i class="bi bi-circle"></i>Products Grid</a>
-                </li>
-                <li> <a href="ecommerce-products-categories.html"><i class="bi bi-circle"></i>Categories</a>
-                </li>
-                <li> <a href="ecommerce-orders.html"><i class="bi bi-circle"></i>Orders</a>
-                </li>
-                <li> <a href="ecommerce-orders-detail.html"><i class="bi bi-circle"></i>Order details</a>
-                </li>
-                <li> <a href="ecommerce-add-new-product.html"><i class="bi bi-circle"></i>Add New Product</a>
-                </li>
-                <li> <a href="ecommerce-add-new-product-2.html"><i class="bi bi-circle"></i>Add New Product 2</a>
-                </li>
-                <li> <a href="ecommerce-transactions.html"><i class="bi bi-circle"></i>Transactions</a>
-                </li>
+                
               </ul>
             </li>
             <li>
               <a class="has-arrow" href="javascript:;">
                 <div class="parent-icon"><i class="bi bi-award-fill"></i>
                 </div>
-                <div class="menu-title">Components</div>
+                <div class="menu-title">المعلمين</div>
               </a>
               <ul>
-                <li> <a href="component-alerts.html"><i class="bi bi-circle"></i>Alerts</a>
+                <li> <a href="{{ route('dash.teachers.index') }}"><i class="bi bi-circle"></i>جميع المعلمين</a>
                 </li>
-                <li> <a href="component-accordions.html"><i class="bi bi-circle"></i>Accordions</a>
-                </li>
-                <li> <a href="component-badges.html"><i class="bi bi-circle"></i>Badges</a>
-                </li>
-                <li> <a href="component-buttons.html"><i class="bi bi-circle"></i>Buttons</a>
-                </li>
-                <li> <a href="component-cards.html"><i class="bi bi-circle"></i>Cards</a>
-                </li>
-                <li> <a href="component-carousels.html"><i class="bi bi-circle"></i>Carousels</a>
-                </li>
-                <li> <a href="component-list-groups.html"><i class="bi bi-circle"></i>List Groups</a>
-                </li>
-                <li> <a href="component-media-object.html"><i class="bi bi-circle"></i>Media Objects</a>
-                </li>
-                <li> <a href="component-modals.html"><i class="bi bi-circle"></i>Modals</a>
-                </li>
-                <li> <a href="component-navs-tabs.html"><i class="bi bi-circle"></i>Navs & Tabs</a>
-                </li>
-                <li> <a href="component-navbar.html"><i class="bi bi-circle"></i>Navbar</a>
-                </li>
-                <li> <a href="component-paginations.html"><i class="bi bi-circle"></i>Pagination</a>
-                </li>
-                <li> <a href="component-popovers-tooltips.html"><i class="bi bi-circle"></i>Popovers & Tooltips</a>
-                </li>
-                <li> <a href="component-progress-bars.html"><i class="bi bi-circle"></i>Progress</a>
-                </li>
-                <li> <a href="component-spinners.html"><i class="bi bi-circle"></i>Spinners</a>
-                </li>
-                <li> <a href="component-notifications.html"><i class="bi bi-circle"></i>Notifications</a>
-                </li>
-                <li> <a href="component-avtars-chips.html"><i class="bi bi-circle"></i>Avatrs & Chips</a>
-                </li>
+                
               </ul>
             </li>
             <li>

@@ -24,5 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('sections');
+         $table->integer('section_id')->nullable();
+
     }
 };

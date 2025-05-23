@@ -3,6 +3,7 @@
 
 <head>
   <!-- Required meta tags -->
+   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="{{asset('dashboard/assets/images/favicon-32x32.png')}}" type="image/png" />
@@ -28,8 +29,27 @@
   <link href="{{asset('dashboard/assets/css/light-theme.css')}}" rel="stylesheet" />
   <link href="{{asset('dashboard/assets/css/semi-dark.css')}}" rel="stylesheet" />
   <link href="{{asset('dashboard/assets/css/header-colors.css')}}" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="{{ asset('dashboard/assets/toastr/app-assets/vendors/css/extensions/toastr.min.css') }}">  <title>@yield('title')</title>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
-  <title>@yield('title')</title>
+    <style>
+        .modal-dialog-scrollable .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+          .swal-footer {
+            display: flex !important;
+            justify-content: center !important;
+            gap: 10px;
+        }
+
+        .swal-button {
+            min-width: 100px;
+        }
+
+    </style>
+
 </head>
 
 <body>
@@ -557,6 +577,8 @@
 
   <!-- Bootstrap bundle JS -->
   <script src="{{asset('dashboard/assets/js/bootstrap.bundle.min.js')}}"></script>
+    
+
   <!--plugins-->
   <script src="{{asset('dashboard/assets/js/jquery.min.js')}}"></script>
   <script src="{{asset('dashboard/assets/plugins/simplebar/js/simplebar.min.js')}}"></script>
@@ -570,7 +592,127 @@
   <script src="{{ asset('datatable_custom/js/vendor/jquery.dataTables.min.js') }}"></script>
   <script src="{{ asset('datatable_custom/js/vendor/dataTables.bootstrap5.js') }}"></script>
   <script src="{{ asset('datatable_custom/js/vendor/dataTables.responsive.min.js') }}"></script>
- 
+  <script src="{{ asset('dashboard/assets/toastr/app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+ <script>
+  
+   $('.btn-add').on('click', function(e) {
+            $('input').removeClass('is-invalid');
+            $('select').removeClass('is-invalid');
+            $('.invalid-feedback').text('');
+        });
+
+
+        $('.add-form').on('submit', function(e) {
+            e.preventDefault();
+            var data = new FormData(this);
+            var url = $(this).attr('action');
+            var type = $(this).attr('method');
+            
+            $.ajax({
+                url: url,
+                type: type,
+                processData: false,
+                contentType: false,
+                data: data,
+                success: function(res) {
+                    // console.log(res.message);
+                    $('#add-modal').modal('hide');
+                    $('#add-form').trigger('reset');
+                    toastr.success(res.success)
+                    table.draw();
+                },
+                error: function(data) {
+                    if (data.status === 422) {
+                        var response = data.responseJSON;
+                        $.each(response.errors, function(key, value) {
+                            var str = (key.split("."));
+                            if (str[1] === '0') {
+                                key = str[0] + '[]';
+                            }
+                            $('[name="' + key + '"], [name="' + key + '[]"]').addClass(
+                                'is-invalid');
+                            $('[name="' + key + '"], [name="' + key + '[]"]').closest(
+                                '.form-group').find('.invalid-feedback').html(value[0]);
+                        });
+                    } else {
+                        console.log('خطأ غير متوقع');
+                    }
+                }
+
+            });
+        });
+        $('.update-form').on('submit', function(e) {
+            e.preventDefault();
+            var data = new FormData(this);
+            var url = $(this).attr('action');
+            var type = $(this).attr('method');
+            $.ajax({
+                url: url,
+                type: type,
+                processData: false,
+                contentType: false,
+                data: data,
+                success: function(res) {
+                    $('#update-modal').modal('hide');
+                    toastr.success(res.success)
+                    table.draw();
+                },
+
+
+            });
+        });
+        $(document).ready(function(){
+          $(document).on('click', '.delete-btn', function (e) {
+            e.preventDefault();
+            var button = $(this);
+            var id = button.data('id');
+            var url = button.data('url');
+            swal({
+              titel: "هل انت متأكد؟",
+              text: "انتبه انت على وشك حذف هذا العنصر",
+              icon: 'warning',
+              buttons:{
+                cancel:{
+                  text: "الغاء",
+                  value: false,
+                  visible: false,
+                  className: "custom-cancel-btn",
+                  closeModal: true, 
+                },
+                confirm: {
+                  text: "حذف",
+                  value: false,
+                  visible: false,
+                  className: "custom-confirm-btn",
+                  closeModal: true, 
+                },
+              },
+              dangerMode: true,
+
+            }).then((willDelete)=>{
+            if(willDelete){
+              $.ajax({
+                url: url,
+                type: "post",
+                data:{
+                   id:id ,
+                   _token: '{{ csrf_token() }}',
+                },
+                success: function(res){
+                    toastr.success(res.success),
+                    table.draw();
+                }
+              });
+            }else{
+              toastr.error('تم الغاء العملية');
+            }
+          });
+          })
+        });
+        
+ </script>
 @yield('js')
 
 </body>
