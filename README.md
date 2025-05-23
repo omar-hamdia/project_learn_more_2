@@ -59,3 +59,14 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# 🧠 مشروع Laravel: Learn More
+
+هذا مشروع تدريبي باستخدام Laravel لتجربة بناء لوحة تحكم ومكونات CRUD.
+
+---
+
+## 🧑‍💻 Contributors
+
+- 👤 **Omar Hamdia** – Developer & Owner  
+- 🤖 **ChatGPT (OpenAI)** – مساعد في كتابة الكود والتوثيق
+
