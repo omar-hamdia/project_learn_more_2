@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Yajra\DataTables\Facades\DataTables;
@@ -20,16 +21,24 @@ class TeacherController extends Controller
    }
    function getdata(Request $request)
 {
-    $grades = Teacher::query();
+    $grades = Teacher::query()
+        ->with('user')
+        ->orderBy('id', 'desc');
     return DataTables::of($grades)
         ->addIndexColumn()
        ->addColumn('email', function($qur){
         return $qur->user->email;
+       })->addColumn('status', function($qur){
+           if($qur->status == 'active'){
+            return '<span class="badge bg-success text-white">مفعل</span>';
+           }
+            return '<span class="badge text-white" style="background-color:#c74375;">معطل</span>';
        })->addColumn('gender', function($qur){
            if($qur->gender == 'm'){
-            return 'ذكر';
+            return '<span class="badge bg-info text-white">ذكر</span>';
            }
-           return 'أنثى';
+                return '<span class="badge text-white" style="background-color:#c74375;">انثى</span>';
+
        })
        ->addColumn('qual', function ($qur){
            return $qur->getQualByCode($qur->qual);
@@ -48,14 +57,25 @@ class TeacherController extends Controller
                       $data_attr   .= 'data-status="'.$qur->status.'" ';
 
 
-                      $action  =   ' <div class="d-flex align-items-center gap-3 fs-6">
-                                <a '. $data_attr .' href="javascript:;" class="text-warning update_btn"data-bs-target="#update-modal" data-bs-toggle="modal" data-bs-placement="bottom" title="" data-bs-original-title="Edit info" aria-label="Edit"><i class="bi bi-pencil-fill"></i></a>
-                                <a data-id="'. $qur->id .'" data-url="'.route('dash.teachers.delete').'" href="javascript:;" class="text-danger delete-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" data-bs-original-title="Delete" aria-label="Delete"><i class="bi bi-trash-fill"></i></a>
-                              </div>';
+
+                            $action = '';
+                              $action .=' <div class="d-flex align-items-center gap-3 fs-6">';
+                              
+                              $action .='<a '. $data_attr .' href="javascript:;" class="text-warning update_btn"data-bs-target="#update-modal" data-bs-toggle="modal" data-bs-placement="bottom" title="" data-bs-original-title="Edit info" aria-label="Edit"><i class="bi bi-pencil-fill"></i></a>';
+                              if($qur->status == 'active'){
+                                   $action .= '     <a data-id="' . $qur->id . '"  data-url="' . route('dash.teachers.delete') . '" class="text-danger delete-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" data-bs-original-title="Delete" aria-label="Delete"><i class="bi bi-trash-fill"></i></a>';
+
+                              }else{
+                                   $action .= '     <a data-id="' . $qur->id . '" data-url="' . route('dash.teachers.active') . '"  class="text-success active-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" data-bs-original-title="Delete" aria-label="Delete"><i class="fadeIn animated bx bx-check-square"></i></a>';
+                              }
+
+                              $action .='</div>';
+
     
     return $action;
 
-        })
+        })->rawColumns(['status', 'action', 'gender'])
+
         
         ->make(true);
 }
@@ -63,18 +83,19 @@ class TeacherController extends Controller
 {
     $request->validate([
         'name' => 'required|string|max:255',
-        'phone' => 'required|integer|unique:teachers,phone',
-        'email' => 'required|email|unique:users,email',
+        'phone'  => ['required',  'unique:teachers,phone'],
         'hire_date' => 'required|date',
         'qual' => 'required|in:d,b,m,dr',
         'spec' => 'required|string|max:255',
-        'gender' => 'required|in:m,mf',
+        'gender' => 'required|in:m,fm',
+        'date_of_birth' => 'required|date|before:hire_date',
+        'hire_date' => 'required|date|after:date_of_birth',
      ],[
         'name.required' => 'الاسم مطلوب',
         'name.string' => 'الاسم يجب أن يكون نص',
         'name.max' => 'الاسم يجب أن لا يتجاوز 255 حرف',
         'phone.required' => 'رقم الهاتف مطلوب',
-        'phone.integer' => 'رقم الهاتف يجب أن يكون رقم صحيح',
+        'phone.regex' => 'يجب أن يكون رقم هاتف  صحيح',
         'phone.unique' => 'رقم الهاتف موجود مسبقاً',
         'email.required' => 'البريد الإلكتروني مطلوب',
         'email.email' => 'البريد الإلكتروني يجب أن يكون عنوان بريد إلكتروني صحيح',
@@ -87,7 +108,7 @@ class TeacherController extends Controller
         'spec.string' => 'التخصص يجب أن يكون نص',
         'spec.max' => 'التخصص يجب أن لا يتجاوز 255 حرف',
         'gender.required' => 'الجنس مطلوب',
-        'gender.in' => 'الجنس يجب أن يكون واحد من القيم التالية: m, mf',
+        'gender.in' => 'الجنس يجب أن يكون واحد من القيم التالية: m, fm',
         'date_of_birth.required' => 'تاريخ الميلاد مطلوب',
         'date_of_birth.date' => 'تاريخ الميلاد يجب أن يكون تاريخ صحيح',
 
@@ -115,75 +136,97 @@ class TeacherController extends Controller
     ]);
 }
  function update(Request $request)
-{
-    $teacher = Teacher::query()->findOrFail($request->id);
-    $user = User::query()->findOrFail($teacher->user_id);
+    {
+        $teacher = Teacher::query()->findOrFail($request->id);
+        $user = User::query()->findOrFail($teacher->user_id);
 
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'phone' => 'required|integer|unique:teachers,phone',
-        'email' => 'required|email|unique:users,email',
-        'hire_date' => 'required|date',
-        'qual' => 'required|in:d,b,m,dr',
-        'spec' => 'required|string|max:255',
-        'gender' => 'required|in:m,mf',
-     ],[
-        'name.required' => 'الاسم مطلوب',
-        'name.string' => 'الاسم يجب أن يكون نص',
-        'name.max' => 'الاسم يجب أن لا يتجاوز 255 حرف',
-        'phone.required' => 'رقم الهاتف مطلوب',
-        'phone.integer' => 'رقم الهاتف يجب أن يكون رقم صحيح',
-        'phone.unique' => 'رقم الهاتف موجود مسبقاً',
-        'email.required' => 'البريد الإلكتروني مطلوب',
-        'email.email' => 'البريد الإلكتروني يجب أن يكون عنوان بريد إلكتروني صحيح',
-        'email.unique' => 'البريد الإلكتروني موجود مسبقاً',
-        'hire_date.required' => 'تاريخ التعيين مطلوب',
-        'hire_date.date' => 'تاريخ التعيين يجب أن يكون تاريخ صحيح',
-        'qual.required' => 'المؤهل مطلوب',
-        'qual.in' => 'المؤهل يجب أن يكون واحد من القيم التالية: d, b, m, dr',
-        'spec.required' => 'التخصص مطلوب',
-        'spec.string' => 'التخصص يجب أن يكون نص',
-        'spec.max' => 'التخصص يجب أن لا يتجاوز 255 حرف',
-        'gender.required' => 'الجنس مطلوب',
-        'gender.in' => 'الجنس يجب أن يكون واحد من القيم التالية: m, mf',
-        'date_of_birth.required' => 'تاريخ الميلاد مطلوب',
-        'date_of_birth.date' => 'تاريخ الميلاد يجب أن يكون تاريخ صحيح',
+        $request->validate([
+            'name'   => ['required', 'string', 'max:255'],
+            'email'  => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'phone'  => ['required', Rule::unique('teachers', 'phone')->ignore($request->id)],
+            'qual'   => ['required', 'in:d,b,m,dr'],
+            'status'   => ['required', 'in:active,inactive'],
+            'spec'   => ['required', 'string', 'max:255'],
+            'gender' => ['required', 'in:m,fm'],
+            'date_of_birth' => ['required', 'date', 'before:hire_date'],
+            'hire_date' => ['required', 'date', 'after:date_of_birth'],
+        ], [
+            'name.required'     => 'الاسم مطلوب.',
+            'name.string'       => 'الاسم يجب أن يكون نصاً.',
+            'name.max'          => 'الاسم لا يجب أن يتجاوز 255 حرفاً.',
 
-     ]);
+            'email.required'    => 'البريد الإلكتروني مطلوب.',
+            'email.email'       => 'يرجى إدخال بريد إلكتروني صحيح.',
+            'email.max'         => 'البريد الإلكتروني طويل جداً.',
+            'email.unique'      => 'هذا البريد الإلكتروني مستخدم مسبقاً.',
 
-    $user->update(['email' => $request->email]);
+            'phone.required'    => 'رقم الهاتف مطلوب.',
+            'phone.regex'       => 'صيغة رقم الهاتف غير صحيحة.',
+            'phone.unique'      => 'رقم الهاتف مستخدم مسبقاً.',
 
-    $teacher->update([
-        'name' => $request->name,
-        'qual' => $request->qual,
-        'spec' => $request->spec,
-        'gender' => $request->gender,
-        'status' => $request->status,
-        'phone' => $request->phone,
-        'hire_date' => $request->hire_date,
-        'date_of_birth' => $request->date_of_birth,
-    ],[
-        'name.required' => 'الاسم مطلوب',
-        'phone.required' => 'رقم الهاتف مطلوب',
-        'email.required' => 'البريد الإلكتروني مطلوب',
-        'hire_date.required' => 'تاريخ التعيين مطلوب',
-        'date_of_birth.required' => 'تاريخ الميلاد مطلوب',
-        'qual.required' => 'المؤهل مطلوب',
-        'spec.required' => 'التخصص مطلوب',
-        'gender.required' => 'الجنس مطلوب',
+            'qual.required'     => 'المؤهل العلمي مطلوب.',
+            'qual.in'       => 'القيمة المدخلة للمؤهل العلمي غير صالحة .',
 
-    ]);
+            'spec.required'     => 'التخصص مطلوب.',
+            'spec.string'       => 'التخصص يجب أن يكون نصاً.',
 
-    return response()->json([
-        'success' => 'تم تحديث بيانات المعلم بنجاح'
-    ], 200, [], JSON_UNESCAPED_UNICODE);
-}
+            'gender.required'   => 'الجنس مطلوب.',
+            'gender.in'         => 'القيمة المدخلة للجنس غير صالحة.',
+
+            'date_of_birth.required'  => 'تاريخ الميلاد مطلوب.',
+            'date_of_birth.date'      => 'صيغة تاريخ الميلاد غير صحيحة.',
+            'date_of_birth.before'    => 'تاريخ الميلاد يجب أن يكون قبل تاريخ التعيين.',
+
+            'hire_date.required'  => 'تاريخ التعيين مطلوب.',
+            'hire_date.date'      => 'صيغة تاريخ التعيين غير صحيحة.',
+            'hire_date.after'     => 'تاريخ التعيين يجب أن يكون بعد تاريخ الميلاد.',
+        ]);
+
+        $user->update([
+            'email' => $request->email,
+        ]);
+
+        $teacher->update([
+            'name' => $request->name,
+            'qual' => $request->qual,
+            'spec' => $request->spec,
+            'gender' => $request->gender,
+            'status' => $request->status,
+            'phone' => $request->phone,
+            'hire_date' => $request->hire_date,
+            'date_of_birth' => $request->date_of_birth,
+            'user_id' =>  $user->id
+        ]);
+
+        return response()->json([
+            'success' => 'تمت العملية بنجاح'
+        ]);
+    }
 
     function delete(Request $request){
-
-    }
+        $teacher = Teacher::query()->findOrFail($request->id);
+        if($teacher){
+            $teacher->update([
+                'status' => 'inactive',
+            ]);
+        }
+         return response()->json([
+        'success' => 'تم تحديث بيانات المعلم بنجاح'
+    ], 200, [], JSON_UNESCAPED_UNICODE);
+        
         
     }
+    function active(Request $request){
+          $teacher = Teacher::query()->findOrFail($request->id);
+        if($teacher){
+            $teacher->update([
+                'status' => 'active',
+            ]);
+        }
+         return response()->json([
+        'success' => 'تم تحديث بيانات المعلم بنجاح'
+    ], 200, [], JSON_UNESCAPED_UNICODE);
+    }
 
 
 
@@ -192,4 +235,4 @@ class TeacherController extends Controller
 
 
 
-
+}

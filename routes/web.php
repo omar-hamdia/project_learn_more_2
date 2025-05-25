@@ -31,22 +31,21 @@ Route::prefix('dashboard/')->name('dash.')->group(function () {
 
     });
     Route::prefix('teachers/')->controller(TeacherController::class)->name('teachers.')->group(function () {
-       Route::get('/', 'index')->name('index');
-       Route::get('/getdata', 'getdata')->name('getdata');
-       Route::get('/getactive', 'getactive')->name('getactive');
-       Route::get('/getactivesection', 'getactivesection')->name('getactive.section');
-       Route::get('/getactivestage', 'getactivestage')->name('getactive.stage');
-       Route::post('/add', 'add')->name('add');
-       Route::post('/update', 'update')->name('update');
-       Route::post('/delete', 'delete')->name('delete');
-       Route::post('/changemaster', 'changemaster')->name('changemaster');
-       Route::post('/addsection', 'addsection')->name('addsection');
-       Route::get('/create', 'create')->name('create');
-
-
-
-
-    });
+            Route::get('/', 'index')->name('index');
+            Route::get('/getdata', 'getdata')->name('getdata');
+            Route::post('/add', 'add')->name('add');
+            Route::post('/update', 'update')->name('update');
+            Route::post('/delete', 'delete')->name('delete');
+            Route::post('/active', 'active')->name('active');
+        });
+         Route::prefix('subjects/')->controller(TeacherController::class)->name('subjects.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/getdata', 'getdata')->name('getdata');
+            Route::post('/add', 'add')->name('add');
+            Route::post('/update', 'update')->name('update');
+            Route::post('/delete', 'delete')->name('delete');
+            Route::post('/active', 'active')->name('active');
+        });
      Route::prefix('sections/')->controller(SectionController::class)->name('section.')->group(function () {
        Route::get('/', 'index')->name('index');
        Route::get('/getdata', 'getdata')->name('getdata');
