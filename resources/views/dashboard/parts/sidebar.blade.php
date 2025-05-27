@@ -78,27 +78,15 @@
         <li> <a href="{{ route('dash.subjects.index') }}"><i class="bi bi-circle"></i>جميع المواد الدراسية </a>
       </ul>
     </li>
-    <li class="menu-label">Forms & Tables</li>
+    <li class="menu-label"></li>
     <li>
       <a class="has-arrow" href="javascript:;">
         <div class="parent-icon"><i class="bi bi-file-earmark-break-fill"></i>
         </div>
-        <div class="menu-title">Forms</div>
+        <div class="menu-title">المحاضرات</div>
       </a>
       <ul>
-        <li> <a href="form-elements.html"><i class="bi bi-circle"></i>Form Elements</a>
-        </li>
-        <li> <a href="form-input-group.html"><i class="bi bi-circle"></i>Input Groups</a>
-        </li>
-        <li> <a href="form-layouts.html"><i class="bi bi-circle"></i>Forms Layouts</a>
-        </li>
-        <li> <a href="form-validations.html"><i class="bi bi-circle"></i>Form Validation</a>
-        </li>
-        <li> <a href="form-wizard.html"><i class="bi bi-circle"></i>Form Wizard</a>
-        </li>
-        <li> <a href="form-date-time-pickes.html"><i class="bi bi-circle"></i>Date Pickers</a>
-        </li>
-        <li> <a href="form-select2.html"><i class="bi bi-circle"></i>Select2</a>
+        <li> <a href="{{ route('dash.lecture.index') }}"><i class="bi bi-circle"></i>جميع المحاضرات</a>
         </li>
       </ul>
     </li>

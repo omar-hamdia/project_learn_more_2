@@ -28,12 +28,12 @@
                                 </div>
 
 
-                                <div class="mb-4 form-group">
+                                 <div class="mb-4 form-group">
                                     <label>المرحلة الدراسية</label>
                                     <select name="grade" class="form-control">
                                         <option selected disabled> اختر المرحلة الدراسية</option>
                                         @foreach ($grades as $g)
-                                            <option value="{{ $g->tag }}">{{ $g->name }}</option>
+                                            <option value="{{ $g->id }}">{{ $g->name }}</option>
                                         @endforeach
                                     </select>
                                     <div class="invalid-feedback"></div>
@@ -81,7 +81,7 @@
                         <h5 class="modal-title" id="stagesModalLabel">تعديل المعلم </h5>
                         <button type="button" class="btn-close ms-0" data-bs-dismiss="modal" aria-label="إغلاق"></button>
                     </div>
-                    <form method="post" action="{{ route('dash.teacher.update') }}" id="update-form" class="update-form">
+                    <form method="post" action="" id="update-form" class="update-form">
                         <div class="modal-body">
 
                             <div class="container">
@@ -237,7 +237,7 @@
 @stop
 @section('js')
     <script>
-       var table = $('#datatable').DataTable({
+    var table = $('#datatable').DataTable({
     processing: true,
     serverSide: true,
     responsive: true,
@@ -249,14 +249,14 @@
             console.log('Server Response:', jqXHR.responseText);
         }
     },
-    columns: [
-        {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-        {data: 'title', name: 'title'},
-        {data: 'grade', name: 'grade.name'},
-        {data: 'teacher', name: 'teacher.name'},
-        {data: 'book', name: 'book', orderable: false, searchable: false},
-        {data: 'action', name: 'action', orderable: false, searchable: false}
-    ],
+   columns: [
+    {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+    {data: 'title', name: 'title'},
+    {data: 'grade', name: 'grade', orderable: false, searchable: false},
+    {data: 'teacher', name: 'teacher', orderable: false, searchable: false},
+    {data: 'book', name: 'book', orderable: false, searchable: false},
+    {data: 'action', name: 'action', orderable: false, searchable: false}
+],
     language: {
         url: "{{ asset('datatable_custom/i18n/ar.json') }}"
     }

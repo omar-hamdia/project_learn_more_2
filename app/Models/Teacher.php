@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Teacher extends Model
 {
+    
     use HasFactory;
     function user(){
         return $this->belongsTo(User::class);
@@ -21,6 +22,7 @@ class Teacher extends Model
         return 'دكتوراه';
     }
 }
+
 
 
 
