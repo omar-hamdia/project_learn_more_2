@@ -220,6 +220,7 @@
                                         <th>المرحلة الدراسية</th>
                                         <th>معلم المادة</th>
                                         <th>كتاب المادة</th>
+                                        <th>محاضرات المادة</th>
                                         <th>العمليات</th>
                                     </tr>
                                 </thead>
@@ -251,10 +252,11 @@
     },
    columns: [
     {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-    {data: 'title', name: 'title'},
-    {data: 'grade', name: 'grade', orderable: false, searchable: false},
-    {data: 'teacher', name: 'teacher', orderable: false, searchable: false},
-    {data: 'book', name: 'book', orderable: false, searchable: false},
+    {data: 'title', name: 'title', orderable: true, searchable: true},
+    {data: 'grade', name: 'grade', orderable: true, searchable: true},
+    {data: 'teacher', name: 'teacher', orderable: true, searchable: true},
+    {data: 'book', name: 'book', orderable: true, searchable: true},
+    {data: 'lectures', name: 'lectures', orderable: false, searchable: false},
     {data: 'action', name: 'action', orderable: false, searchable: false}
 ],
     language: {

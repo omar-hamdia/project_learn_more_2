@@ -14,7 +14,7 @@
                         <h5 class="modal-title" id="stagesModalLabel">اضافة معلم جديد</h5>
                         <button type="button" class="btn-close ms-0" data-bs-dismiss="modal" aria-label="إغلاق"></button>
                     </div>
-                    <form method="post" action="{{ route('dash.lecture.add') }}" id="add-form" class="add-form">
+                    <form method="post" action="{{ route('dash.teachers.add') }}" id="add-form" class="add-form">
                         <div class="modal-body">
 
                             <div class="container">
@@ -68,19 +68,20 @@
 
                                 </div>
                                 <div class="mb-4 form-group">
-                                    <label>تاريخ التعيين</label>
-                                    <input name="hire_date" type="date" class="form-control">
-                                    <div class="invalid-feedback"></div>
-
-                                </div>
-
-                                <div class="mb-4 form-group">
                                     <label>تاريخ الميلاد</label>
                                     <input name="date_of_birth" type="date" class="form-control">
                                     <div class="invalid-feedback"></div>
                                 </div>
 
                             </div>
+                                <div class="mb-4 form-group">
+                                    <label>تاريخ التعيين</label>
+                                    <input name="hire_date" type="date" class="form-control">
+                                    <div class="invalid-feedback"></div>
+
+                                </div>
+
+                                
                         </div>
                         <div class="modal-footer mb-3">
                             <button class="btn btn-outline-success col-12" type="submit">اضافة</button>

@@ -63,7 +63,7 @@ class LectureController extends Controller
 
                 $action .= '<a ' . $data_attr . ' data-bs-toggle="modal" data-bs-target="#update-modal" class="text-warning update_btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" data-bs-original-title="Edit info" aria-label="Edit"><i class="bi bi-pencil-fill "></i></a>';
 
-                    $action .= '     <a data-id="' . $qur->id . '"  data-url="' . route('dash.teacher.delete') . '" class="text-danger delete-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" data-bs-original-title="Delete" aria-label="Delete"><i class="bi bi-trash-fill"></i></a>';
+                    $action .= '     <a data-id="' . $qur->id . '"  data-url="' . route('dash.lecture.delete') . '" class="text-danger delete-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" data-bs-original-title="Delete" aria-label="Delete"><i class="bi bi-trash-fill"></i></a>';
 
                 $action .= '</div>';
 
@@ -76,11 +76,11 @@ class LectureController extends Controller
       function add(Request $request)
     {
         $request->validate([
-            'title'   => ['required'],
-            'desc'  => ['required' ],
-            'subject'  => ['required' ],
-            'teacher'   => ['required' ],
-            'link'   => ['required'],
+            'title'   => ['required' , 'string' , 'max:255'],
+            'desc'  => ['required' , 'string', 'min:20' ],
+            'subject'  => ['required' , 'exists:subjects,id'],
+            'teacher'   => ['required' , 'exists:teachers,id'],
+            'link'   => ['required', 'url'],
         ]);
 
         Lecture::create([

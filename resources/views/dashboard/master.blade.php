@@ -33,6 +33,8 @@
     <link rel="stylesheet" type="text/css"
         href="{{ asset('dashboard/toastr/app-assets/vendors/css/extensions/toastr.min.css') }}">
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
 
     <style>
         .modal-dialog-scrollable .modal-body {
@@ -694,7 +696,7 @@
 
     <script src="{{ asset('dashboard/toastr/app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         $('.btn-add').on('click', function(e) {
             $('input').removeClass('is-invalid');
