@@ -58,34 +58,30 @@ class SubjectController extends Controller
         ->make(true);
 }
  
-    function add(Request $request)
-    {
 
-
-        $request->validate([
+public function add(Request $request)
+{
+    $request->validate([
         'title'   => ['required', 'string', 'max:255'],
         'teacher'  => ['required', 'exists:teachers,id'],
         'grade'  => ['required',  'exists:grades,id'],
-        'book' => ['required', 'mimes:pdf', 'max:10240'], 
+        'book' => ['required', 'mimes:pdf', 'max:10240'],
+    ], [
         'title.required' => 'عنوان المادة مطلوب.',
-        'title.string' => 'عنوان المادة يجب أن يكون نصاً.',
         'teacher.required' => 'يرجى اختيار المدرس.',
-        'teacher.exists' => 'المعلم المحدد غير موجود.',
+        'grade.required' => 'يرجى إدخال المرحلة الدراسية.',
         'book.required' => 'يرجى رفع كتاب المادة.',
         'book.mimes' => 'يجب أن يكون الكتاب بصيغة PDF فقط.',
-        'book.max' => 'أقصى حجم للكتاب هو 5 ميجابايت.',
-        'grade.required' => 'يرجى إدخال المرحلة الدراسية.',
+        'book.max' => 'أقصى حجم للكتاب هو 10 ميجابايت.',
     ]);
 
-        $name = 'LearnSchool_' . time() . '_' . rand() . '.' . $request->file('book')->getClientOriginalExtension();
-       $request->file('book')->move(public_path('uploads\books'),$name);
-       $grade = Grade::query()->where('tag', $request->grade)->first();
-    
+    $name = 'LearnSchool_' . time() . '_' . rand() . '.' . $request->file('book')->getClientOriginalExtension();
+    $request->file('book')->move(public_path('uploads/books'), $name);
 
     Subject::create([
         'title' => $request->title,
         'teacher_id' => $request->teacher,
-        'grade_id' => $request->grade, 
+        'grade_id' => $request->grade,
         'book' => $name,
     ]);
 

@@ -33,8 +33,6 @@
     <link rel="stylesheet" type="text/css"
         href="{{ asset('dashboard/toastr/app-assets/vendors/css/extensions/toastr.min.css') }}">
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-
 
     <style>
         .modal-dialog-scrollable .modal-body {
@@ -53,6 +51,7 @@
         }
 
     </style>
+    @yield('css')
     <title>@yield('title')</title>
 </head>
 
@@ -153,10 +152,14 @@
                                 </li>
                                 <li>
                                     <a class="dropdown-item" href="authentication-signup-with-header-footer.html">
-                                        <div class="d-flex align-items-center">
+                                        <form method="post" action="{{ route('logout') }}">
+                                            @csrf
+                                          <div class="d-flex align-items-center">
                                             <div class=""><i class="bi bi-lock-fill"></i></div>
-                                            <div class="ms-3"><span>Logout</span></div>
+                                            <button type="submit"><span class="ms-3">Logout</span></button>
                                         </div>
+                                        </form>
+
                                     </a>
                                 </li>
                             </ul>
@@ -585,7 +588,7 @@
                         alt="logo icon">
                 </div>
                 <div>
-                    <h4 class="logo-text">Snacked</h4>
+                    <h4 class="logo-text">LEARNSCHOOL</h4>
                 </div>
                 <div class="toggle-icon ms-auto"> <i class="bi bi-list"></i>
                 </div>
@@ -696,7 +699,7 @@
 
     <script src="{{ asset('dashboard/toastr/app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
     <script>
         $('.btn-add').on('click', function(e) {
             $('input').removeClass('is-invalid');
@@ -814,15 +817,18 @@
                 });
             })
         });
-        $('#search-btn').on('click', function(e){
+
+
+        $('#search-btn').on('click', function(e) {
             e.preventDefault();
             table.draw();
-        })
-        $('#clear-btn').on('click', function(e){
+        });
+
+        $('#clear-btn').on('click', function(e) {
             e.preventDefault();
             $('.search-input').val("").trigger('change')
             table.draw();
-        })
+        });
     </script>
 
     @yield('js')

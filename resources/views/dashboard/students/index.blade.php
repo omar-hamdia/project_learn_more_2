@@ -247,14 +247,18 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <button class="btn btn-primary col-12 btn-add" data-bs-toggle="modal"
+                        <button class="btn btn-primary col-12 btn-add mb-2" data-bs-toggle="modal"
                             data-bs-target="#add-modal">
                             اضافة طالب جديد 
                         </button>
-                        <button class="btn btn-primary col-12 btn-add" data-bs-toggle="modal"
+                        <button class="btn btn-primary col-12 btn-add mb-2" data-bs-toggle="modal"
                             data-bs-target="#import-modal">
                             اضافة عبر الاكسل  
                         </button>
+
+                        <a href = "{{ route('dash.student.export') }}" class="btn btn-primary col-12 btn-add mb-2" >
+                             تصدير الاكسل  
+                        </a>
                     </div>
                 </div>
             </div>

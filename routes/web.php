@@ -19,7 +19,7 @@ Route::get('/', function () {
 // learnschool
 // name: dash.grade.index
 Route::prefix('learnschool/')->group(function () {
-Route::prefix('dashboard/')->middleware(['auth'])->name('dash.')->group(function () {
+Route::prefix('dashboard/')->middleware(['auth', 'verified'])->name('dash.')->group(function () {
     Route::prefix('grades/')->controller(GradeController::class)->name('grade.')->group(function () {
        Route::get('/', 'index')->name('index');
        Route::get('/getdata', 'getdata')->name('getdata');
@@ -68,6 +68,7 @@ Route::prefix('dashboard/')->middleware(['auth'])->name('dash.')->group(function
             Route::get('/getdata/lectures', 'getdatalectures')->name('getdata.lectures');
             Route::post('/add', 'add')->name('add');
             Route::post('/import', 'import')->name('import');
+            Route::get('/export', 'export')->name('export');
             Route::get('/lectures/{id}', 'lectures')->name('lectures');
             Route::get('/download/{filename}', 'download')->name('download');
             Route::post('/update', 'update')->name('update');

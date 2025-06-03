@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Spatie\SimpleExcel\SimpleExcelWriter;
 class StudentsController extends Controller
 {
     function index()
@@ -60,7 +64,7 @@ class StudentsController extends Controller
 }
 function add(Request $request)
     {
-
+    
         // dd($request->all());
         $request->validate([
         'first_name'     => ['required', 'string', 'max:255'],
@@ -89,7 +93,6 @@ function add(Request $request)
 
     $grade = Grade::find($request->grade);
     $section = Section::find($request->section);
-
     Student::create([
         'first_name' => $request->first_name,
         'parent_name' => $request->parent_name,
@@ -108,57 +111,116 @@ function add(Request $request)
     ]);
 }
  
+
 public function import(Request $request)
 {
     if (!$request->hasFile('excel')) {
         return response()->json(['error' => 'لم يتم رفع ملف الإكسل'], 400);
     }
+
+    $errors = [];
+    $dir = public_path('uploads/files/excel');
+    if (!file_exists($dir)) {
+        mkdir($dir, 0777, true);
+    }
     $file = $request->file('excel');
     $name = 'LearnSchool_' . time() . '_' . rand() . '.' . $file->getClientOriginalExtension();
-    $file->move(public_path('uploads/files/excel'), $name);
-    $path = public_path('uploads/files/excel') . DIRECTORY_SEPARATOR . $name;
+    $file->move($dir, $name);
+    $path = $dir . DIRECTORY_SEPARATOR . $name;
 
-   SimpleExcelReader::create($path)->getRows()->each(function (array $row) use (&$errors) {
-        $val = Validator::make($row, [
-            'email' => 'required|email',
+    SimpleExcelReader::create($path)->getRows()->each(function (array $row) use (&$errors) {
+    $val = Validator::make($row, [
+        'email' => 'required|email',
+        'first_name' => 'required|string',
+        'last_name' => 'required|string',
+        'parent_name' => 'required|string',
+        'parent_phone' => 'required|string',
+        'gender' => 'required|in:m,fm',
+        'date_of_birth' => 'required|date',
+        'grade' => 'required|exists:grades,id',
+        'section' => 'required|exists:sections,id',
+    ]);
 
-        ]); 
-        if($val->fails()){
-            Log::warning("لقد قمت بتجاوز هذا السطر بسبب الاخطاء" . $row);
-            return;
-        }
-            
-        $user = User::query()->where('email', $row['email'])->first();
-        if(!$user){
-            $password = Str::random(10);
-            $user =  User::create([
-                'email' => $row['email'],
-                'password' => Hash::make($password),
-            ]);
-        }
+    if ($val->fails()) {
+        \Log::warning("تم تجاهل الصف بسبب خطأ: ", $row);
+        \Log::warning($val->errors()->all()); // هذا السطر يعطيك تفاصيل الخطأ في log
+        $row['validation_errors'] = $val->errors()->all(); // أضف الأخطاء للصف
+        $errors[] = $row;
+        return;
+    }
 
-        $grade = Grade::query()->where('tag', $row['grade'])->first();
-        $section = Section::query()->where('name', $row['section'])->first();
-        if (!$grade || !$section) {
-            $errors[] = $row;
-            return;
-        }
+    $user = \App\Models\User::firstOrCreate(
+        ['email' => $row['email']],
+        ['password' => \Hash::make(\Str::random(10))]
+    );
 
-        Student::query()->updateOrCreate(['user_id' => $user->id],[
+    \App\Models\Student::updateOrCreate(
+        ['user_id' => $user->id],
+        [
             'first_name' => $row['first_name'],
             'last_name' => $row['last_name'],
             'parent_name' => $row['parent_name'],
             'parent_phone' => $row['parent_phone'],
             'gender' => $row['gender'],
             'date_of_birth' => $row['date_of_birth'],
-            'grade_id' => $grade->id,
-            'section_id' => $section->id,
-        ]);
-    });
+            'grade_id' => $row['grade'],
+            'section_id' => $row['section'],
+        ]
+    );
+});
 
-        
-    
+// بعد الـ each مباشرة
+if (!empty($errors)) {
+    return response()->json([
+        'warning' => 'تم استيراد البيانات مع وجود بعض الصفوف التي لم يتم معالجتها.',
+        'error_rows' => $errors,
+    ], 207);
 }
+
+return response()->json([
+    'success' => 'تم استيراد البيانات بنجاح',
+]);
+}
+
+    function export(){
+        $dir = public_path('exports');
+
+        if(!File::exists('exports')){
+            File::makeDirectory($dir, 0777 , true);
+        }
+        $path = public_path('exports/students_export_' . time() . '.csv');
+
+        $students = Student::query()->with(['grade', 'user', 'section'])->get(); 
+        SimpleExcelWriter::create($path)->addHeader([
+            'First Name',
+            'last Name',
+            'parent Name',
+            'parent Phone',
+            'Email',
+            'Data Of Birth',
+            'Grade',
+            'Section',
+            'Gender',
+            
+
+        ])->addRows($students->map(function($student){
+            return[
+                $student->first_name,
+                $student->last_name,
+                $student->parent_name,
+                $student->parent_phone,
+                $student->user->email,
+                $student->date_of_birth,
+                $student->grade->name ,
+                $student->section->name ,
+                $student->gender,
+            ];
+        }));
+
+        return response()->download($path)->deleteFileAfterSend(true);
+
+    }
+
 }
 
 

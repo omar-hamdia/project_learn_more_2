@@ -9,12 +9,27 @@ use Symfony\Component\HttpFoundation\Response;
 
 class IsTeacher
 {
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::user();
-        if(!$user || !Teacher::where('user_id', $user->id)->exists()){
-            abort(403 , 'غير مسموح بالدخول الا كمعلم');
+        if(!auth()->check()){
+            return redirect()->route('login');
+        }
+        $role = auth()->user()->role ?? null ;
+        if($role !== 'teacher' && $role !== 'admin'){
+            return redirect()->route('login');
         }
         return $next($request);
-    }
+
+
+
+
+
+
+
 }
+} 
