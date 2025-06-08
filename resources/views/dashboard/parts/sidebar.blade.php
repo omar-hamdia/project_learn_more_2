@@ -1,6 +1,6 @@
 <ul class="metismenu" id="menu">
-     @if (!auth()->user()->teacher)
-    <li class="menu-label">ادوات المسؤول</li>
+    @if(!auth()->user()->teacher)
+<li class="menu-label">ادوات المسؤول</li>
     <li>
       <a href="javascript:;" class="has-arrow">
         <div class="parent-icon"><i class="bi bi-droplet-fill"></i>
@@ -67,17 +67,18 @@
         </li>
       </ul>
     </li>
- @else
-     <li class="menu-label">ادوات المعلم</li>
+@else
 
- <li>
+<li class="menu-label">ادوات المعلم</li>
+    <li>
       <a href="javascript:;" class="has-arrow">
         <div class="parent-icon"><i class="bi bi-droplet-fill"></i>
         </div>
         <div class="menu-title"> المحاضرات</div>
       </a>
       <ul>
-        
+        <li> <a href="{{ route('dash.teacher.lectures.index') }}"><i class="bi bi-circle"></i>جميع المستويات</a>
+        </li>
 
       </ul>
     </li>

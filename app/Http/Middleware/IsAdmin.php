@@ -15,6 +15,9 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if(!auth()->check() || auth()->user()->teacher){
+            abort(403, 'انت محظور من الدخول الى هذه الصفحة.');
+        }
         return $next($request);
     }
 }

@@ -1,10 +1,11 @@
 <?php
+
 namespace App\Http\Middleware;
 
 use App\Models\Teacher;
-use Illuminate\Support\Facades\Auth;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class IsTeacher
@@ -16,20 +17,11 @@ class IsTeacher
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(!auth()->check()){
-            return redirect()->route('login');
-        }
-        $role = auth()->user()->role ?? null ;
-        if($role !== 'teacher' && $role !== 'admin'){
-            return redirect()->route('login');
+
+        $user = Auth::user();
+        if(!auth()->check() || !auth()->user()->teacher){
+             abort(403 , 'غير مسموح بالدخول   .');
         }
         return $next($request);
-
-
-
-
-
-
-
+    }
 }
-} 

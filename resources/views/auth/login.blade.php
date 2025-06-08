@@ -13,7 +13,7 @@
         @endsession
 
         <form method="POST" action="{{ route('login') }}">
-            @csrf
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
             <div>
                 <x-label for="email" value="{{ __('Email') }}" />
